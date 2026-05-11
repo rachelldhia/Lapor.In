@@ -1,0 +1,6 @@
+# Mengabaikan folder platform bawaan Flutter agar GitHub fokus pada Dart
+linux/** linguist-generated=true
+macos/** linguist-generated=true
+windows/** linguist-generated=true
+android/** linguist-generated=true
+ios/** linguist-generated=true
