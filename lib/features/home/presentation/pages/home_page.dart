@@ -44,17 +44,45 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const MapPage()),
                 );
               },
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
-                ),
-                child: Image.asset(
-                  'assets/images/map_placeholder.png',
-                  width: double.infinity,
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.topCenter,
-                ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                    child: Image.asset(
+                      'assets/images/map_placeholder.png',
+                      width: double.infinity,
+                      fit: BoxFit.fitWidth,
+                      alignment: Alignment.topCenter,
+                    ),
+                  ),
+                  // White/gray translucent circle
+                  IgnorePointer(
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.35),
+                          width: 1.2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Red Location Pin in the center
+                  const IgnorePointer(
+                    child: Icon(
+                      Icons.location_on_rounded,
+                      color: Color(0xFFCC2D30),
+                      size: 38,
+                    ),
+                  ),
+                ],
               ),
             ),
 
