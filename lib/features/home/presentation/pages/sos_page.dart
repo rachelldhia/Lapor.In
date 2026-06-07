@@ -113,9 +113,14 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
     });
 
     try {
+      debugPrint("SOS: Starting Siren Audio...");
+      await _audioPlayer.stop();
+      await _audioPlayer.setVolume(1.0);
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
       await _audioPlayer.play(AssetSource('icons/siren.mp3'));
-    } catch (_) {
+      debugPrint("SOS: Siren Audio is playing.");
+    } catch (e) {
+      debugPrint("SOS: Failed to play audio siren: $e");
       // Offline fallback: play repeat system alert beeps
       _sirenTimer?.cancel();
       _sirenTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
