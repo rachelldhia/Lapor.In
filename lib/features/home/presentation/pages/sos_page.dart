@@ -114,7 +114,7 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
 
     try {
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-      await _audioPlayer.play(UrlSource('https://soundbible.com/mp3/Warning%20Siren-SoundBible.com-898272278.mp3'));
+      await _audioPlayer.play(AssetSource('icons/siren.mp3'));
     } catch (_) {
       // Offline fallback: play repeat system alert beeps
       _sirenTimer?.cancel();
