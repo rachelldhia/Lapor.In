@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:laporin/theme.dart';
 import 'calling_page.dart';
 
@@ -18,6 +19,7 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
   int _tapCount = 0;
   Timer? _tapTimer;
   Timer? _sirenTimer;
+  late AudioPlayer _audioPlayer;
   
   // Controller for manual soft tap scale pulse
   late AnimationController _tapController;
@@ -30,6 +32,8 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _audioPlayer = AudioPlayer();
+    
     _tapController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -53,6 +57,7 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
     _pulseController.dispose();
     _tapTimer?.cancel();
     _sirenTimer?.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -99,17 +104,33 @@ class _SosPageState extends State<SosPage> with TickerProviderStateMixin {
     _stopSiren();
   }
 
-  void _startSiren() {
+  void _startSiren() async {
     _sirenTimer?.cancel();
+    
+    // Periodically trigger vibration
     _sirenTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      SystemSound.play(SystemSoundType.alert);
       HapticFeedback.vibrate();
     });
+
+    try {
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+      await _audioPlayer.play(UrlSource('https://soundbible.com/mp3/Warning%20Siren-SoundBible.com-898272278.mp3'));
+    } catch (_) {
+      // Offline fallback: play repeat system alert beeps
+      _sirenTimer?.cancel();
+      _sirenTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+        SystemSound.play(SystemSoundType.alert);
+        HapticFeedback.vibrate();
+      });
+    }
   }
 
-  void _stopSiren() {
+  void _stopSiren() async {
     _sirenTimer?.cancel();
     _sirenTimer = null;
+    try {
+      await _audioPlayer.stop();
+    } catch (_) {}
   }
 
   void _call112() {
