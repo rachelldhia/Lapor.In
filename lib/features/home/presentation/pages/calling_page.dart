@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class CallingPage extends StatefulWidget {
   final String contactName;
   final String phoneNumber;
+  final String? avatarUrl;
 
   const CallingPage({
     super.key,
     required this.contactName,
     required this.phoneNumber,
+    this.avatarUrl,
   });
 
   @override
@@ -91,6 +93,22 @@ class _CallingPageState extends State<CallingPage> with SingleTickerProviderStat
         Navigator.of(context).pop();
       }
     });
+  }
+
+  String _getDefaultAvatarUrl() {
+    final lowercaseName = widget.contactName.toLowerCase();
+    final isFemale = lowercaseName.endsWith("ah") || 
+                     lowercaseName.endsWith("i") || 
+                     lowercaseName.endsWith("a") || 
+                     lowercaseName.contains("siti") ||
+                     lowercaseName.contains("dewi") ||
+                     lowercaseName.contains("indah") ||
+                     lowercaseName.contains("rini") ||
+                     lowercaseName.contains("fani");
+    final avatarId = (widget.contactName.hashCode % 90).abs();
+    return isFemale 
+        ? "https://randomuser.me/api/portraits/women/$avatarId.jpg" 
+        : "https://randomuser.me/api/portraits/men/$avatarId.jpg";
   }
 
   @override
@@ -205,7 +223,7 @@ class _CallingPageState extends State<CallingPage> with SingleTickerProviderStat
                         : CircleAvatar(
                             radius: 55,
                             backgroundImage: NetworkImage(
-                              'https://i.pravatar.cc/150?u=${widget.contactName.hashCode}',
+                              widget.avatarUrl ?? _getDefaultAvatarUrl(),
                             ),
                           ),
                   ),

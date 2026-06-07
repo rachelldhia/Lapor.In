@@ -17,25 +17,25 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
   int _activeTabIndex = 0;
 
   final List<Map<String, String>> _contacts = [
-    {"name": "Brandon", "phone": "081382397623", "type": "Personal"},
-    {"name": "Panggilan Darurat", "phone": "112", "type": "Umum"},
-    {"name": "Kepolisian RI", "phone": "110", "type": "Umum"},
-    {"name": "Ambulans & Medis", "phone": "118", "type": "Umum"},
-    {"name": "Pemadam Kebakaran", "phone": "113", "type": "Umum"},
+    {"name": "Brandon", "phone": "081382397623", "type": "Personal", "gender": "male", "avatar": "https://randomuser.me/api/portraits/men/32.jpg"},
+    {"name": "Panggilan Darurat", "phone": "112", "type": "Umum", "gender": "none"},
+    {"name": "Kepolisian RI", "phone": "110", "type": "Umum", "gender": "none"},
+    {"name": "Ambulans & Medis", "phone": "118", "type": "Umum", "gender": "none"},
+    {"name": "Pemadam Kebakaran", "phone": "113", "type": "Umum", "gender": "none"},
   ];
 
   // Realistic mock data for phone contacts database
   final List<Map<String, String>> _deviceContacts = [
-    {"name": "Siti Aminah", "phone": "081234567890"},
-    {"name": "Budi Santoso", "phone": "081398765432"},
-    {"name": "Andi Wijaya", "phone": "085712345678"},
-    {"name": "Dewi Lestari", "phone": "081987654321"},
-    {"name": "Eko Prasetyo", "phone": "081298761234"},
-    {"name": "Fani Rahmawati", "phone": "081312348765"},
-    {"name": "Heri Kurniawan", "phone": "085298765432"},
-    {"name": "Indah Permatasari", "phone": "081234560000"},
-    {"name": "Joko Widodo", "phone": "081100223344"},
-    {"name": "Rini Handayani", "phone": "087812345678"},
+    {"name": "Siti Aminah", "phone": "081234567890", "gender": "female", "avatar": "https://randomuser.me/api/portraits/women/11.jpg"},
+    {"name": "Budi Santoso", "phone": "081398765432", "gender": "male", "avatar": "https://randomuser.me/api/portraits/men/12.jpg"},
+    {"name": "Andi Wijaya", "phone": "085712345678", "gender": "male", "avatar": "https://randomuser.me/api/portraits/men/14.jpg"},
+    {"name": "Dewi Lestari", "phone": "081987654321", "gender": "female", "avatar": "https://randomuser.me/api/portraits/women/24.jpg"},
+    {"name": "Eko Prasetyo", "phone": "081298761234", "gender": "male", "avatar": "https://randomuser.me/api/portraits/men/28.jpg"},
+    {"name": "Fani Rahmawati", "phone": "081312348765", "gender": "female", "avatar": "https://randomuser.me/api/portraits/women/35.jpg"},
+    {"name": "Heri Kurniawan", "phone": "085298765432", "gender": "male", "avatar": "https://randomuser.me/api/portraits/men/38.jpg"},
+    {"name": "Indah Permatasari", "phone": "081234560000", "gender": "female", "avatar": "https://randomuser.me/api/portraits/women/42.jpg"},
+    {"name": "Joko Widodo", "phone": "081100223344", "gender": "male", "avatar": "https://randomuser.me/api/portraits/men/44.jpg"},
+    {"name": "Rini Handayani", "phone": "087812345678", "gender": "female", "avatar": "https://randomuser.me/api/portraits/women/48.jpg"},
   ];
 
   List<Map<String, String>> _filteredContacts = [];
@@ -75,8 +75,29 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
   }
 
   void _addNewContact(String name, String phone) {
+    final lowercaseName = name.toLowerCase();
+    final isFemale = lowercaseName.endsWith("ah") || 
+                     lowercaseName.endsWith("i") || 
+                     lowercaseName.endsWith("a") || 
+                     lowercaseName.contains("siti") ||
+                     lowercaseName.contains("dewi") ||
+                     lowercaseName.contains("indah") ||
+                     lowercaseName.contains("rini") ||
+                     lowercaseName.contains("fani");
+    final gender = isFemale ? "female" : "male";
+    final avatarId = (name.hashCode % 90).abs();
+    final avatar = isFemale 
+        ? "https://randomuser.me/api/portraits/women/$avatarId.jpg" 
+        : "https://randomuser.me/api/portraits/men/$avatarId.jpg";
+
     setState(() {
-      _contacts.insert(0, {"name": name, "phone": phone, "type": "Personal"});
+      _contacts.insert(0, {
+        "name": name,
+        "phone": phone,
+        "type": "Personal",
+        "gender": gender,
+        "avatar": avatar,
+      });
       _updateFilteredContacts();
     });
     
@@ -356,14 +377,19 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                                       CircleAvatar(
                                         backgroundColor: const Color(0xFFFED7D7),
                                         radius: 18,
-                                        child: Text(
-                                          devContact["name"]![0].toUpperCase(),
-                                          style: const TextStyle(
-                                            color: Color(0xFFE53E3E),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        backgroundImage: devContact["avatar"] != null
+                                            ? NetworkImage(devContact["avatar"]!)
+                                            : null,
+                                        child: devContact["avatar"] != null
+                                            ? null
+                                            : Text(
+                                                devContact["name"]![0].toUpperCase(),
+                                                style: const TextStyle(
+                                                  color: Color(0xFFE53E3E),
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -430,12 +456,13 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
     );
   }
 
-  void _callContact(String name, String phone) {
+  void _callContact(String name, String phone, String? avatar) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => CallingPage(
           contactName: name,
           phoneNumber: phone,
+          avatarUrl: avatar,
         ),
       ),
     );
@@ -663,14 +690,22 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                                               ? const Color(0xFFFED7D7)
                                               : const Color(0xFFE2E8F0),
                                           shape: BoxShape.circle,
+                                          image: (isPersonal && item["avatar"] != null)
+                                              ? DecorationImage(
+                                                  image: NetworkImage(item["avatar"]!),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : null,
                                         ),
-                                        child: Icon(
-                                          isPersonal ? Icons.person_rounded : Icons.local_phone_rounded,
-                                          color: isPersonal
-                                              ? const Color(0xFFE53E3E)
-                                              : const Color(0xFF4A5568),
-                                          size: 22,
-                                        ),
+                                        child: (isPersonal && item["avatar"] != null)
+                                            ? null
+                                            : Icon(
+                                                isPersonal ? Icons.person_rounded : Icons.local_phone_rounded,
+                                                color: isPersonal
+                                                    ? const Color(0xFFE53E3E)
+                                                    : const Color(0xFF4A5568),
+                                                size: 22,
+                                              ),
                                       ),
                                       const SizedBox(width: 14),
                                       // Contact Name and Phone
@@ -701,7 +736,11 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                                       IconButton(
                                         icon: const Icon(Icons.phone_enabled_rounded,
                                             color: Color(0xFFCC2D30), size: 24),
-                                        onPressed: () => _callContact(item["name"]!, item["phone"]!),
+                                        onPressed: () => _callContact(
+                                          item["name"]!,
+                                          item["phone"]!,
+                                          item["avatar"],
+                                        ),
                                       ),
                                     ],
                                   ),

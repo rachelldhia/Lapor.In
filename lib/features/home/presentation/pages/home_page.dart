@@ -145,7 +145,7 @@ class HomePage extends StatelessWidget {
                                           !avatarPath.startsWith('http'))
                                       ? FileImage(File(avatarPath))
                                       : NetworkImage(avatarPath ??
-                                              'https://i.pravatar.cc/150?u=eve')
+                                              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150')
                                           as ImageProvider,
                                 ),
                               ),

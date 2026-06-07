@@ -127,7 +127,7 @@ class ProfilePage extends StatelessWidget {
                           avatarPath.isNotEmpty &&
                           !avatarPath.startsWith('http'))
                       ? FileImage(File(avatarPath))
-                      : NetworkImage(avatarPath ?? 'https://i.pravatar.cc/150?u=eve')
+                      : NetworkImage(avatarPath ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150')
                           as ImageProvider,
                 ),
               ),
